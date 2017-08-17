@@ -3,8 +3,12 @@
 Email:610262374@qq.com 
 QQ Group:225982985
 
-## 3.x API
-3.X https://github.com/sunkaixuan/SqlSugar/tree/master
+## Nuget 
+Install-Package sqlSugar  (MySql、SqlServer、Sqlite、Oracle)  
+Install-Package sqlSugarCore  (MySql、SqlServer、sqlite、Oracle)
+
+## Here's the history version
+https://github.com/sunkaixuan/SqlSugar/tree/master
 
 ##  1. Query
 
@@ -51,6 +55,26 @@ var skip5 = db.Queryable<Student>().Skip(5).ToList();
 ``` 
 
 ### 1.4 Join
+
+#### easy join 
+```c
+//2 join
+var list5 = db.Queryable<Student, School>((st, sc) => st.SchoolId == sc.Id).Select((st,sc)=>new {st.Name,st.Id,schoolName=sc.Name}).ToList();
+```
+
+```c
+//3 join 
+var list6 = db.Queryable<Student, School,School>((st, sc,sc2) => st.SchoolId == sc.Id&&sc.Id==sc2.Id)
+    .Select((st, sc,sc2) => new { st.Name, st.Id, schoolName = sc.Name,schoolName2=sc2.Name }).ToList();
+ ```
+ 
+ ```c
+//3 join page
+var list7= db.Queryable<Student, School, School>((st, sc, sc2) => st.SchoolId == sc.Id && sc.Id == sc2.Id)
+.Select((st, sc, sc2) => new { st.Name, st.Id, schoolName = sc.Name, schoolName2 = sc2.Name }).ToPageList(1,2);
+```
+
+#### left join  
 ```c
 //join  2
 var list = db.Queryable<Student, School>((st, sc) => new object[] {
@@ -310,7 +334,7 @@ catch (Exception)
   throw;
 }
    ```
- ##  7. Use SP
+ ##  7. Use Store Procedure
 ```c
    //1. no result 
   db.Ado.UseStoredProcedure(() =>
@@ -400,3 +424,11 @@ var db = GetInstance();
     .CreateClassFile("c:\\Demo\\6");
 }
 ```
+## 8.Code First
+```
+db.CodeFirst.BackupTable().InitTables(typeof(CodeTable),typeof(CodeTable2)); //change entity backupTable
+db.CodeFirst.InitTables(typeof(CodeTable),typeof(CodeTable2));
+```
+
+More
+http://www.codeisbug.com/Doc/8
